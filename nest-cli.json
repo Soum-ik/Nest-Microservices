@@ -1,10 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/resveervations/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true
+    "webpack": true,
+    "tsConfigPath": "apps/resveervations/tsconfig.app.json"
   },
   "projects": {
     "common": {
@@ -15,6 +16,17 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "resveervations": {
+      "type": "application",
+      "root": "apps/resveervations",
+      "entryFile": "main",
+      "sourceRoot": "apps/resveervations/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/resveervations/tsconfig.app.json"
+      }
     }
-  }
+  },
+  "monorepo": true,
+  "root": "apps/resveervations"
 }
