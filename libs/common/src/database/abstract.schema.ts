@@ -6,3 +6,4 @@ export class AbstractDocument {
   @Prop({ type: SchemaTypes.ObjectId, })
   _id: Types.ObjectId;
 }
+ 
