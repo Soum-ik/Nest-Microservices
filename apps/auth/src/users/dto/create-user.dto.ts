@@ -1,4 +1,5 @@
-import { IsEmail, isEmail, IsString, IsStrongPassword } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail()

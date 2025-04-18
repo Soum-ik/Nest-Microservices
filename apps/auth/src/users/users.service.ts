@@ -9,4 +9,9 @@ export class UsersService {
     const user = await this.usersRepository.create(createUserDto);
     return user;
   }
+
+  async getUsers() {
+    const users = await this.usersRepository.find({})
+    return users;
+  }
 }
