@@ -6,7 +6,6 @@ import { LoggerModule } from '@app/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { join } from 'path';
 @Module({
   imports: [
     UsersModule,

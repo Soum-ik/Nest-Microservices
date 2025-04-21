@@ -24,6 +24,7 @@ import * as Joi from 'joi';
       isGlobal: true,
       validationSchema: Joi.object({
         DATABASE_URL: Joi.string().required(),
+        PORT: Joi.number().required(),
       }),
     }),
   ],
