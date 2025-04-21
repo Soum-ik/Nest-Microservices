@@ -6,10 +6,19 @@ import { LoggerModule } from '@app/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
+import { join } from 'path';
 @Module({
   imports: [
     UsersModule,
     LoggerModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION: Joi.number().default(3600),
+        DATABASE_URL: Joi.string().required(),
+      }),
+    }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
@@ -18,13 +27,6 @@ import * as Joi from 'joi';
         },
       }),
       inject: [ConfigService],
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validationSchema: Joi.object({
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRATION: Joi.number().default(3600),
-      }),
     }),
   ],
   controllers: [AuthController],
