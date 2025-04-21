@@ -13,6 +13,7 @@ import { join } from 'path';
     LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: './apps/auth/.env',  // Updated path to point to the reservation service .env file
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION: Joi.number().default(3600),

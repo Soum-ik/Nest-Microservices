@@ -15,6 +15,7 @@
       "sourceRoot": "apps/auth/src",
       "compilerOptions": {
         "tsConfigPath": "apps/auth/tsconfig.app.json"
+        
       }
     },
     "common": {

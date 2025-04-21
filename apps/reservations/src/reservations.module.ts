@@ -20,6 +20,7 @@ import * as Joi from 'joi';
     ]),
     LoggerModule,
     ConfigModule.forRoot({
+      envFilePath: './apps/reservations/.env',  // Updated path to point to the reservation service .env file
       isGlobal: true,
       validationSchema: Joi.object({
         DATABASE_URL: Joi.string().required(),
