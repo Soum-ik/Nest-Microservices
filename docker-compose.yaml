@@ -1,16 +1,24 @@
 services:
   reservations:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/reservations/Dockerfile
       target: development
-    command: npm run start:dev reservations
+    command: npm run start:dev
     env_file:
       - ./apps/reservations/.env
     ports:
       - '3000:3000'
-    volumes:
-      - .:/usr/src/app
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/reservations
+          target: /usr/src/app/apps/reservations/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apps/reservations/src
+
   auth:
     build: 
       context: .
@@ -21,5 +29,12 @@ services:
       - ./apps/auth/.env
     ports:
       - '3001:3001'
-    volumes:
-      - .:/usr/src/app
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/auth
+          target: /usr/src/app/apps/auth/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apps/auth/src

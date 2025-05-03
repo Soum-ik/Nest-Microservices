@@ -8,16 +8,25 @@ import { Transport } from '@nestjs/microservices'; // Fixed import path
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
-  app.connectMicroservice({ transport : Transport.TCP });
+  const configService = app.get(ConfigService);
+  console.log('Hello from auth service');
+  console.log(configService.get('HTTP_PORT'), 'get the http port!');
+  
+  app.connectMicroservice({
+    transport: Transport.TCP,
+  options: {
+      host: '0.0.0.0',
+      port: configService.get('TCP_PORT'),
+    },
+  });
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-    }),
+    })
   );
   app.useLogger(app.get(Logger));
-  const configService = app.get(ConfigService);
   await app.startAllMicroservices();
-  await app.listen(configService.get('PORT') ?? 3001);
+  await app.listen(configService.get('HTTP_PORT') ?? 3001);
 }
 bootstrap();

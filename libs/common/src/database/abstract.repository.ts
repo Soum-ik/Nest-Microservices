@@ -15,29 +15,20 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return (await createdDocument.save()).toJSON() as unknown as TDocument;
   }
 
-  async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument  | null> {
-    const document = await this.model
-      .findOne(filterQuery)
-      .lean<TDocument>(true); // ✅ Only one .lean call
+  async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument | null> {
+    const document = await this.model.findOne(filterQuery).lean<TDocument>(true); // ✅ Only one .lean call
 
     return document;
   }
 
-  async findOneAndUpdate(
-    filterQuery: FilterQuery<TDocument>,
-    update: UpdateQuery<TDocument>,
-  ): Promise<TDocument> {
+  async findOneAndUpdate(filterQuery: FilterQuery<TDocument>, update: UpdateQuery<TDocument>): Promise<TDocument> {
     const document = await this.model.findOneAndUpdate(filterQuery, update, {
       new: true,
     });
 
     if (!document) {
-      this.logger.warn(
-        `Document not found for query: ${JSON.stringify(filterQuery)}`,
-      );
-      throw new NotFoundException(
-        `Document not found for query: ${JSON.stringify(filterQuery)}`,
-      );
+      this.logger.warn(`Document not found for query: ${JSON.stringify(filterQuery)}`);
+      throw new NotFoundException(`Document not found for query: ${JSON.stringify(filterQuery)}`);
     }
     return document;
   }
@@ -46,20 +37,12 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return this.model.find(filterQuery).lean<TDocument[]>(true);
   }
 
-  async findOneAndDelete(
-    filterQuery: FilterQuery<TDocument>,
-  ): Promise<TDocument> {
-    const document = await this.model
-      .findOneAndDelete(filterQuery)
-      .lean<TDocument>(true);
+  async findOneAndDelete(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
+    const document = await this.model.findOneAndDelete(filterQuery).lean<TDocument>(true);
 
     if (!document) {
-      this.logger.warn(
-        `Document not found for query: ${JSON.stringify(filterQuery)}`,
-      );
-      throw new NotFoundException(
-        `Document not found for query: ${JSON.stringify(filterQuery)}`,
-      );
+      this.logger.warn(`Document not found for query: ${JSON.stringify(filterQuery)}`);
+      throw new NotFoundException(`Document not found for query: ${JSON.stringify(filterQuery)}`);
     }
 
     return document;
