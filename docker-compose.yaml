@@ -38,3 +38,22 @@ services:
             - node_modules/
         - action: rebuild
           path: ./apps/auth/src
+  payments: 
+    build: 
+      context: .
+      dockerfile: ./apps/payments/Dockerfile
+      target: development
+    command: npm run start:dev payments
+    env_file:
+      - ./apps/payments/.env
+    ports:
+      - '3003:3003'
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/payments
+          target: /usr/src/app/apps/payments/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apps/payments/src
