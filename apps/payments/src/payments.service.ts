@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
-import { CreateChargeDto } from '../dto/create-charge.dto';
+import { CreateChargeDto } from '../../../libs/common/src/dto/create-charge.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -21,6 +21,9 @@ export class PaymentsService {
       confirmation_method: 'automatic',
       confirm: true,
     });
+
+    console.log(paymentIntent, 'paymentIntent');
+    
 
     return paymentIntent;
   }

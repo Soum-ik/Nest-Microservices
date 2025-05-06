@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
-import { PaymentsService } from './payments.service';
-import { UsersModule } from 'apps/auth/src/users/users.module';
-import { LoggerModule } from 'nestjs-pino';
+import { PaymentsService } from './payments.service'; 
+import { LoggerModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
