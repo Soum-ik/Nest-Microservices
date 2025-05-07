@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateChargeDto } from '@app/common';
@@ -7,7 +7,7 @@ import { CreateChargeDto } from '@app/common';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @MessagePattern('payments.createCharge')
+  @MessagePattern('charge')
   async createCharge(@Payload() data: CreateChargeDto) {
     return this.paymentsService.createCharge(data);
   }

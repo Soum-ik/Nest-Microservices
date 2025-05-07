@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { reservationsService } from './reservations.service';
 import { CreatereservationDto } from './dto/create-reservation.dto';
 import { UpdatereservationDto } from './dto/update-reservation.dto';
 import { CurrentUser, JwtAuthGuard, UserDto } from '@app/common';
-import { UserDocument } from 'apps/auth/src/users/models/users.schema'; 
+import { reservationsService } from './reservations.service';
 
 @Controller('reservations')
 export class reservationsController {
@@ -13,7 +12,6 @@ export class reservationsController {
   @Post()
   async create(@Body() createreservationDto: CreatereservationDto, @CurrentUser() user: UserDto) {
     const _user = this.reservationsService.create(createreservationDto, user.id);
-    console.log(_user, 'user from create reservation');
     return _user;
   }
 

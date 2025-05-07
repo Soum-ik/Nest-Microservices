@@ -11,10 +11,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   console.log('Hello from auth service');
   console.log(configService.get('HTTP_PORT'), 'get the http port!');
-  
+
   app.connectMicroservice({
     transport: Transport.TCP,
-  options: {
+    options: {
       host: '0.0.0.0',
       port: configService.get('TCP_PORT'),
     },

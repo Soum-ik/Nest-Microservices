@@ -46,8 +46,6 @@ services:
     command: npm run start:dev payments
     env_file:
       - ./apps/payments/.env
-    ports:
-      - '3003:3003'
     develop:
       watch:
         - action: sync
