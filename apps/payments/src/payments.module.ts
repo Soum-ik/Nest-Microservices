@@ -16,6 +16,7 @@ import * as Joi from 'joi';
         STRIPE_SECRET_API_KEY: Joi.string().required(),
         STRIPE_PUBLIC_API_KEY: Joi.string().required(),
         DATABASE_URL: Joi.string().required(),
+        FRONTEND_URL: Joi.string().required(),
       }),
     }),
   ],

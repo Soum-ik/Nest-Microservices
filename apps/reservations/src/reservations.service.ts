@@ -4,25 +4,55 @@ import { UpdatereservationDto } from './dto/update-reservation.dto';
 import { reservationsRepository } from './reservations.repository';
 import { PAYMENT_SERVICE } from '@app/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class reservationsService {
   constructor(
-    // Constructor logic can be added here if needed
     @Inject(PAYMENT_SERVICE) private readonly paymentService: ClientProxy,
     private readonly reservationRepository: reservationsRepository
   ) {}
 
-  create(createreservationDto: CreatereservationDto, userId: string) {
-    console.log('Payment successful', createreservationDto.charge);
-    this.paymentService.send('charge', createreservationDto.charge).subscribe(async (res) => {
-      console.log('Payment successful', res);
+  async initiateReservation(createreservationDto: CreatereservationDto, userId: string) {
+    // Create a pending reservation record
+    const pendingReservation = await this.reservationRepository.create({
+      ...createreservationDto,
+      timestamp: new Date(),
+      userId,
+      status: 'pending', // Add a status field to your schema
     });
-    // return  this.reservationRepository.create({
-    //   ...createreservationDto,
-    //   timestamp: new Date(),
-    //   userId,
-    // });
+
+    // Create a checkout session with metadata
+    const checkoutResult = await firstValueFrom(
+      this.paymentService.send('create-checkout-session', {
+        amount: createreservationDto.charge.amount,
+        email: createreservationDto.charge.email,
+        metadata: {
+          reservationId: pendingReservation._id.toString(),
+          userId,
+        },
+      })
+    );
+
+    return {
+      reservationId: pendingReservation._id,
+      checkoutUrl: checkoutResult.url,
+      sessionId: checkoutResult.sessionId,
+    };
+  }
+
+  async confirmReservation(sessionId: string) {
+    // Verify the payment was successful
+    const paymentResult = await firstValueFrom(this.paymentService.send('verify-payment', { sessionId }));
+
+    if (paymentResult.isPaid && paymentResult.metadata?.reservationId) {
+      // Update the reservation to confirmed
+      await this.reservationRepository.findOneAndUpdate({ _id: paymentResult.metadata.reservationId }, { $set: { status: 'confirmed' } });
+
+      return { success: true, reservationId: paymentResult.metadata.reservationId };
+    }
+
+    return { success: false, message: 'Payment verification failed' };
   }
 
   findAll() {

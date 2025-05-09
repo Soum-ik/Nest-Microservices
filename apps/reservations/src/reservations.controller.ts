@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { CreatereservationDto } from './dto/create-reservation.dto';
 import { UpdatereservationDto } from './dto/update-reservation.dto';
 import { CurrentUser, JwtAuthGuard, UserDto } from '@app/common';
@@ -11,8 +11,19 @@ export class reservationsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createreservationDto: CreatereservationDto, @CurrentUser() user: UserDto) {
-    const _user = this.reservationsService.create(createreservationDto, user.id);
-    return _user;
+    return this.reservationsService.initiateReservation(createreservationDto, user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('confirm')
+  async confirmReservation(@Body() body: { sessionId: string }) {
+    return this.reservationsService.confirmReservation(body.sessionId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('confirm/callback')
+  async checkoutCallback(@Query('session_id') sessionId: string) {
+    return this.reservationsService.confirmReservation(sessionId);
   }
 
   @UseGuards(JwtAuthGuard)

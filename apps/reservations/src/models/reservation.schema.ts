@@ -20,6 +20,9 @@ export class reservationDocument extends AbstractDocument {
 
   @Prop()
   invoiceId: string;
+
+  @Prop()
+  status: string;
 }
 
 export const reservationSchema = SchemaFactory.createForClass(reservationDocument); 
