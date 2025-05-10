@@ -20,7 +20,7 @@ services:
           path: ./apps/reservations/src
 
   auth:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
       target: development
@@ -38,14 +38,16 @@ services:
             - node_modules/
         - action: rebuild
           path: ./apps/auth/src
-  payments: 
-    build: 
+  payments:
+    build:
       context: .
       dockerfile: ./apps/payments/Dockerfile
       target: development
     command: npm run start:dev payments
     env_file:
       - ./apps/payments/.env
+    ports:
+      - '3005:3005'
     develop:
       watch:
         - action: sync
@@ -55,3 +57,20 @@ services:
             - node_modules/
         - action: rebuild
           path: ./apps/payments/src
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: npm run start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/notifications
+          target: /usr/src/app/apps/notifications/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apps/notifications/src

@@ -1,12 +1,17 @@
 import { ConfigService } from '@nestjs/config';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { CreateChargeDto } from '../../../libs/common/src/dto/create-charge.dto';
+import { NOTIFICATIONS_SERVICE } from '@app/common';
+import { NotificationsService } from 'apps/notifications/src/notifications.service';
 
 @Injectable()
 export class PaymentsService {
   private readonly stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_API_KEY')!);
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    @Inject(NOTIFICATIONS_SERVICE) private readonly notificationsService: NotificationsService,
+    private readonly configService: ConfigService
+  ) {}
 
   async createCheckoutSession(amount: number, email: string, metadata: Record<string, string>) {
     const session = await this.stripe.checkout.sessions.create({
