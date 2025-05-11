@@ -3,6 +3,7 @@ import { CreatereservationDto } from './dto/create-reservation.dto';
 import { UpdatereservationDto } from './dto/update-reservation.dto';
 import { CurrentUser, JwtAuthGuard, UserDto } from '@app/common';
 import { reservationsService } from './reservations.service';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('reservations')
 export class reservationsController {
@@ -14,16 +15,10 @@ export class reservationsController {
     return this.reservationsService.initiateReservation(createreservationDto, user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('confirm')
-  async confirmReservation(@Body() body: { sessionId: string }) {
-    return this.reservationsService.confirmReservation(body.sessionId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('confirm/callback')
-  async checkoutCallback(@Query('session_id') sessionId: string) {
-    return this.reservationsService.confirmReservation(sessionId);
+  // Add message pattern handler for webhook events
+  @EventPattern('confirm-reservation-payment')
+  async handlePaymentConfirmation(@Payload() data: { reservationId: string; status: string }) {
+    return this.reservationsService.updateReservationStatus(data.reservationId, data.status);
   }
 
   @UseGuards(JwtAuthGuard)

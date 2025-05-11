@@ -55,6 +55,20 @@ export class reservationsService {
     return { success: false, message: 'Payment verification failed' };
   }
 
+  // Add this method to handle webhook confirmations
+  async updateReservationStatus(reservationId: string, status: string) {
+    try {
+      const reservation = await this.reservationRepository.findOneAndUpdate(
+        { _id: reservationId },
+        { $set: { status } }
+      );
+      
+      return { success: true, reservation };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   findAll() {
     return this.reservationRepository.find({});
   }

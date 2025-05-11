@@ -1,16 +1,17 @@
 import { ConfigService } from '@nestjs/config';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import Stripe from 'stripe';
 import { CreateChargeDto } from '../../../libs/common/src/dto/create-charge.dto';
-import { NOTIFICATIONS_SERVICE } from '@app/common';
-import { NotificationsService } from 'apps/notifications/src/notifications.service';
+import { ClientProxy } from '@nestjs/microservices';
+import { RESERVATIONS_SERVICE } from '@app/common';
 
 @Injectable()
 export class PaymentsService {
   private readonly stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_API_KEY')!);
+  
   constructor(
-    @Inject(NOTIFICATIONS_SERVICE) private readonly notificationsService: NotificationsService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    @Inject(RESERVATIONS_SERVICE) private readonly reservationsService: ClientProxy
   ) {}
 
   async createCheckoutSession(amount: number, email: string, metadata: Record<string, string>) {
@@ -38,12 +39,43 @@ export class PaymentsService {
     return { sessionId: session.id, url: session.url };
   }
 
-  async verifyPaymentSession(sessionId: string) {
-    const session = await this.stripe.checkout.sessions.retrieve(sessionId);
-    return {
-      status: session.payment_status,
-      metadata: session.metadata,
-      isPaid: session.payment_status === 'paid',
-    };
+  async handleWebhook(payload: any, signature: string) {
+    const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+    
+    try {
+      const event = this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        webhookSecret
+      );
+      
+      switch (event.type) {
+        case 'checkout.session.completed':
+          await this.handleCheckoutSessionCompleted(event.data.object);
+          break;
+        case 'payment_intent.succeeded':
+          await this.handlePaymentIntentSucceeded(event.data.object);
+          break;
+      }
+      
+      return { received: true };
+    } catch (err) {
+      throw new BadRequestException(`Webhook Error: ${err.message}`);
+    }
+  }
+  
+  private async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+    if (session.metadata?.reservationId) {
+      this.reservationsService.emit('confirm-reservation-payment', {
+        sessionId: session.id,
+        reservationId: session.metadata.reservationId,
+        userId: session.metadata.userId,
+        status: 'confirmed'
+      });
+    }
+  }
+  
+  private async handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+    console.log('Payment succeeded:', paymentIntent.id);
   }
 }
