@@ -14,8 +14,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       envFilePath: './apps/notifications/.env', // Updated path to point to the reservation service .env file
       validationSchema: Joi.object({
         PORT: Joi.number().required(),
-        NOTIFICATIONS_HOST: Joi.string().required(),
-        NOTIFICATIONS_PORT: Joi.number().required(),
       }),
     }),
   ],

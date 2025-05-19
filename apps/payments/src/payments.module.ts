@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
-import { LoggerModule, NOTIFICATIONS_SERVICE } from '@app/common';
+import { LoggerModule, NOTIFICATIONS_SERVICE, RESERVATIONS_SERVICE } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -17,9 +17,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         STRIPE_SECRET_API_KEY: Joi.string().required(),
         STRIPE_PUBLIC_API_KEY: Joi.string().required(),
         DATABASE_URL: Joi.string().required(),
-        FRONTEND_URL: Joi.string().required(),
+        FRONTEND_URL: Joi.string().required(), 
         NOTIFICATIONS_HOST: Joi.string().required(),
         NOTIFICATIONS_PORT: Joi.number().required(),
+        RESERVATIONS_HOST: Joi.string().required(),
+        RESERVATIONS_PORT: Joi.number().required(),
       }),
     }),
     ClientsModule.registerAsync([
@@ -30,6 +32,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           options: {
             host: configService.get('NOTIFICATIONS_HOST'),
             port: configService.get('NOTIFICATIONS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: RESERVATIONS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('RESERVATIONS_HOST'),
+            port: configService.get('RESERVATIONS_PORT'),
           },
         }),
         inject: [ConfigService],

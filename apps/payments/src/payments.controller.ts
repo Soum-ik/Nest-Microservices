@@ -15,9 +15,17 @@ export class PaymentsController {
   // Add webhook handler (exposed as HTTP endpoint)
   @Post('webhook')
   async handleWebhook(@Body() payload: any, @Headers('stripe-signature') signature: string) {
+    
+    console.log('webhook working:');
+    
+
     if (!signature) {
       throw new BadRequestException('Missing stripe signature');
     }
+    
+    console.log('webhook working:', payload);
+    console.log('signature:', signature);
+    
 
     return this.paymentsService.handleWebhook(payload, signature);
   }
