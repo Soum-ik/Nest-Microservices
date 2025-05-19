@@ -13,6 +13,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/sleeper/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "stripe": "stripe listen --forward-to http://localhost:3005/webhook",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

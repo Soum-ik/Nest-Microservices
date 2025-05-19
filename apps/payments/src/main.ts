@@ -43,7 +43,5 @@ async function bootstrap() {
   // Start both the microservice and HTTP server
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PROT') || 3005); // Use a different port for HTTP
-
-  console.log(`Payment service running on ports: TCP:${configService.get('PORT')}, HTTP:${configService.get('HTTP_PORT') || 3002}`);
 }
 bootstrap();
