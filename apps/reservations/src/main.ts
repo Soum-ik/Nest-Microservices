@@ -14,13 +14,14 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: configService.get('PORT'),
+      port: configService.get('TCP_PORT'),
     },
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
   app.use(cookieParser());
+  await app.startAllMicroservices();
   await app.listen(configService.get('PORT') ?? 3000);
 }
 bootstrap();

@@ -1,7 +1,8 @@
-import { BadRequestException, Body, Controller, Headers, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Headers, Post, Req } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateChargeDto } from '@app/common';
+import { Request } from 'express';
 
 @Controller()
 export class PaymentsController {
@@ -12,21 +13,14 @@ export class PaymentsController {
     return this.paymentsService.createCheckoutSession(data.amount, data.email, data.metadata);
   }
 
-  // Add webhook handler (exposed as HTTP endpoint)
+  // Updated webhook handler to use raw request body
   @Post('webhook')
-  async handleWebhook(@Body() payload: any, @Headers('stripe-signature') signature: string) {
-    
-    console.log('webhook working:');
-    
-
+  async handleWebhook(@Req() request: Request, @Headers('stripe-signature') signature: string) {
     if (!signature) {
       throw new BadRequestException('Missing stripe signature');
     }
     
-    console.log('webhook working:', payload);
-    console.log('signature:', signature);
-    
-
-    return this.paymentsService.handleWebhook(payload, signature);
+    // Raw body is available because we used bodyParser.raw() middleware
+    return this.paymentsService.handleWebhook(request.body, signature);
   }
 }

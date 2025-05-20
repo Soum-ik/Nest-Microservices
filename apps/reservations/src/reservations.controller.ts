@@ -17,7 +17,9 @@ export class reservationsController {
 
   // Add message pattern handler for webhook events
   @EventPattern('confirm-reservation-payment')
-  async handlePaymentConfirmation(@Payload() data: { reservationId: string; status: string }) {
+  async handlePaymentConfirmation(@Payload() data: UpdatereservationDto) {
+    console.log('Payment confirmation data', data);
+    
     return this.reservationsService.updateReservationStatus(data.reservationId, data.status);
   }
 
