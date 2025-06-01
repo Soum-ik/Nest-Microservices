@@ -42,6 +42,6 @@ async function bootstrap() {
 
   // Start both the microservice and HTTP server
   await app.startAllMicroservices();
-  await app.listen(configService.get('HTTP_PROT') || 3005); // Use a different port for HTTP
+  await app.listen(configService.get('HTTP_PORT') || 3005); // Use a different port for HTTP
 }
 bootstrap();
